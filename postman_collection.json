@@ -1,0 +1,59 @@
+{
+  "info": {
+    "name": "League Track API",
+    "_postman_id": "d6b2f4b6-8e6f-4c9b-9a17-leaguetrack",
+    "description": "Postman requests for the League Track Spring Boot project.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key": "baseUrl", "value": "http://localhost:8080"},
+    {"key": "matchId", "value": "1"},
+    {"key": "fixtureId", "value": "1"}
+  ],
+  "item": [
+    {
+      "name": "Teams",
+      "item": [
+        {
+          "name": "Register Team A",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Team A\"\n}"}, "url": {"raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"]}}
+        },
+        {
+          "name": "Register Team B",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Team B\"\n}"}, "url": {"raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"]}}
+        },
+        {
+          "name": "Register Team C",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Team C\"\n}"}, "url": {"raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"]}}
+        },
+        {
+          "name": "Register Team D",
+          "request": {"method": "POST", "header": [{"key": "Content-Type", "value": "application/json"}], "body": {"mode": "raw", "raw": "{\n  \"name\": \"Team D\"\n}"}, "url": {"raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}"], "path": ["api", "teams"]}}
+        },
+        {"name": "Get Teams", "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/api/teams", "host": ["{{baseUrl}}", "api", "teams"]}}}
+      ]
+    },
+    {
+      "name": "Fixtures",
+      "item": [
+        {"name": "Generate Fixture", "request": {"method": "POST", "url": {"raw": "{{baseUrl}}/api/fixtures/generate", "host": ["{{baseUrl}}", "api", "fixtures", "generate"]}}},
+        {"name": "Get Fixtures", "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/api/fixtures", "host": ["{{baseUrl}}", "api", "fixtures"]}}},
+        {"name": "Get Fixture Matches", "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/api/fixtures/{{fixtureId}}/matches", "host": ["{{baseUrl}}", "api", "fixtures", "{{fixtureId}}", "matches"]}}}
+      ]
+    },
+    {
+      "name": "Matches",
+      "item": [
+        {"name": "Get All Matches", "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/api/matches", "host": ["{{baseUrl}}", "api", "matches"]}}},
+        {"name": "Record 3-1 Result", "request": {"method": "POST", "url": {"raw": "{{baseUrl}}/api/matches/{{matchId}}/result?homeScore=3&awayScore=1", "host": ["{{baseUrl}}", "api", "matches", "{{matchId}}", "result"], "query": [{"key": "homeScore", "value": "3"}, {"key": "awayScore", "value": "1"}]}}},
+        {"name": "Get Match", "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/api/matches/{{matchId}}", "host": ["{{baseUrl}}", "api", "matches", "{{matchId}}"]}}}
+      ]
+    },
+    {
+      "name": "Standings",
+      "item": [
+        {"name": "Get Standings", "request": {"method": "GET", "url": {"raw": "{{baseUrl}}/api/standings", "host": ["{{baseUrl}}", "api", "standings"]}}}
+      ]
+    }
+  ]
+}

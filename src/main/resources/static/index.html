@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>League Track | Tournament Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #0d1322 0%, #07090e 90%);
+      --card-bg: rgba(22, 28, 45, 0.7);
+      --card-border: rgba(255, 255, 255, 0.08);
+      --card-hover: rgba(30, 41, 69, 0.8);
+      --primary: #3b82f6;
+      --primary-glow: rgba(59, 130, 246, 0.35);
+      --accent: #10b981;
+      --accent-glow: rgba(16, 185, 129, 0.35);
+      --danger: #ef4444;
+      --text-main: #f1f5f9;
+      --text-muted: #94a3b8;
+      --gold: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Ambient glow elements */
+    .glow-sphere-1 {
+      position: fixed;
+      top: -100px;
+      right: -100px;
+      width: 400px;
+      height: 400px;
+      background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+    .glow-sphere-2 {
+      position: fixed;
+      bottom: -150px;
+      left: -150px;
+      width: 500px;
+      height: 500px;
+      background: radial-gradient(circle, rgba(16, 185, 129, 0.12) 0%, transparent 70%);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(16px);
+      background: rgba(7, 9, 14, 0.75);
+      border-bottom: 1px solid var(--card-border);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .brand-logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: linear-gradient(135deg, #3b82f6, #10b981);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.25rem;
+      color: white;
+      box-shadow: 0 0 20px var(--primary-glow);
+    }
+
+    .brand-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.35rem;
+      letter-spacing: -0.02em;
+      background: linear-gradient(to right, #ffffff, #93c5fd);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 0.75rem;
+      align-items: center;
+    }
+
+    .btn {
+      padding: 0.55rem 1.15rem;
+      border-radius: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+      text-decoration: none;
+      border: none;
+    }
+
+    .btn-swagger {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.4);
+      color: #93c5fd;
+    }
+    .btn-swagger:hover {
+      background: rgba(59, 130, 246, 0.25);
+      color: #bfdbfe;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px var(--primary-glow);
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #2563eb, #3b82f6);
+      color: white;
+      box-shadow: 0 4px 14px var(--primary-glow);
+    }
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #1d4ed8, #2563eb);
+      transform: translateY(-1px);
+    }
+
+    .btn-success {
+      background: linear-gradient(135deg, #059669, #10b981);
+      color: white;
+      box-shadow: 0 4px 14px var(--accent-glow);
+    }
+    .btn-success:hover {
+      background: linear-gradient(135deg, #047857, #059669);
+      transform: translateY(-1px);
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1200px;
+      width: 100%;
+      margin: 2rem auto;
+      padding: 0 1.5rem 3rem;
+      display: flex;
+      flex-direction: column;
+      gap: 2rem;
+    }
+
+    .hero-banner {
+      background: linear-gradient(135deg, rgba(30, 58, 138, 0.4), rgba(6, 78, 59, 0.3));
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 2rem;
+      backdrop-filter: blur(12px);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+    }
+
+    .hero-banner h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      margin-bottom: 0.5rem;
+    }
+
+    .hero-banner p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 600px;
+    }
+
+    .badge-status {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.85rem;
+      border-radius: 9999px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.15);
+      color: #34d399;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+      box-shadow: 0 0 8px #10b981;
+      animation: pulse 2s infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.4; transform: scale(1.2); }
+    }
+
+    .grid-layout {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 2rem;
+    }
+    @media (max-width: 900px) {
+      .grid-layout {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 16px;
+      padding: 1.5rem;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    .card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* Form input styling */
+    .input-group {
+      display: flex;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    input[type="text"], input[type="number"] {
+      flex: 1;
+      background: rgba(13, 19, 34, 0.8);
+      border: 1px solid var(--card-border);
+      border-radius: 8px;
+      padding: 0.6rem 0.85rem;
+      color: var(--text-main);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border 0.2s;
+    }
+    input[type="text"]:focus, input[type="number"]:focus {
+      border-color: var(--primary);
+    }
+
+    /* Teams tag list */
+    .teams-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      min-height: 40px;
+    }
+    .team-chip {
+      background: rgba(59, 130, 246, 0.15);
+      border: 1px solid rgba(59, 130, 246, 0.3);
+      padding: 0.35rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: #93c5fd;
+    }
+
+    /* Table styling */
+    .table-container {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+
+    th {
+      padding: 0.75rem 0.5rem;
+      color: var(--text-muted);
+      font-weight: 600;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      border-bottom: 1px solid var(--card-border);
+    }
+
+    td {
+      padding: 0.85rem 0.5rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    .rank-cell {
+      font-weight: 700;
+      width: 36px;
+    }
+    .rank-1 { color: #fbbf24; }
+    .rank-2 { color: #e2e8f0; }
+    .rank-3 { color: #f97316; }
+
+    .team-name-cell {
+      font-weight: 600;
+      color: #ffffff;
+    }
+
+    .pts-cell {
+      font-weight: 800;
+      color: #60a5fa;
+      font-size: 1.05rem;
+    }
+
+    /* Matches list */
+    .matches-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+      max-height: 380px;
+      overflow-y: auto;
+      padding-right: 0.25rem;
+    }
+
+    .match-item {
+      background: rgba(13, 19, 34, 0.6);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.85rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.5rem;
+      transition: background 0.2s;
+    }
+    .match-item:hover {
+      background: rgba(22, 28, 45, 0.9);
+    }
+
+    .match-teams {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      flex: 1;
+    }
+    .match-vs {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      font-weight: 400;
+    }
+
+    .match-score-form {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+    .score-input {
+      width: 44px;
+      text-align: center;
+      padding: 0.3rem 0.2rem;
+    }
+
+    .score-display {
+      font-weight: 700;
+      color: #34d399;
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 0.2rem 0.6rem;
+      border-radius: 6px;
+      font-size: 0.85rem;
+    }
+
+    .alert {
+      padding: 0.75rem 1rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+      margin-bottom: 1rem;
+      display: none;
+    }
+    .alert-error {
+      background: rgba(239, 68, 68, 0.15);
+      border: 1px solid rgba(239, 68, 68, 0.3);
+      color: #fca5a5;
+    }
+    .alert-success {
+      background: rgba(16, 185, 129, 0.15);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: #6ee7b7;
+    }
+
+    /* League complete banner */
+    .league-complete-banner {
+      display: none;
+      background: linear-gradient(135deg, rgba(245, 158, 11, 0.18), rgba(245, 158, 11, 0.06));
+      border: 1px solid rgba(245, 158, 11, 0.45);
+      border-radius: 14px;
+      padding: 1.25rem 1.5rem;
+      gap: 1.25rem;
+      align-items: center;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      animation: fadeIn 0.4s ease;
+    }
+    .league-complete-banner.visible { display: flex; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .league-complete-banner .trophy { font-size: 2rem; }
+    .league-complete-banner h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 700;
+      color: #fbbf24;
+      margin-bottom: 0.25rem;
+    }
+    .league-complete-banner p {
+      color: #fde68a;
+      font-size: 0.85rem;
+    }
+    .btn-gold {
+      background: linear-gradient(135deg, #d97706, #f59e0b);
+      color: #1c1917;
+      font-weight: 700;
+      box-shadow: 0 4px 14px rgba(245,158,11,0.35);
+      white-space: nowrap;
+    }
+    .btn-gold:hover {
+      background: linear-gradient(135deg, #b45309, #d97706);
+      transform: translateY(-1px);
+    }
+    .btn-disabled {
+      background: rgba(100,116,139,0.2);
+      border: 1px solid rgba(100,116,139,0.3);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+    .pending-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      background: rgba(245, 158, 11, 0.15);
+      border: 1px solid rgba(245, 158, 11, 0.35);
+      color: #fcd34d;
+      padding: 0.3rem 0.75rem;
+      border-radius: 9999px;
+      font-size: 0.78rem;
+      font-weight: 600;
+    }
+  </style>
+</head>
+<body>
+  <div class="glow-sphere-1"></div>
+  <div class="glow-sphere-2"></div>
+
+  <header>
+    <div class="brand">
+      <div class="brand-logo">LT</div>
+      <div class="brand-name">League Track</div>
+    </div>
+    <div class="header-actions">
+      <div class="badge-status">
+        <span class="pulse-dot"></span>
+        API Online :8080
+      </div>
+      <a href="/swagger-ui.html" target="_blank" class="btn btn-swagger">
+        ⚡ Swagger UI
+      </a>
+    </div>
+  </header>
+
+  <main>
+    <div class="hero-banner">
+      <div>
+        <h1>Intramural League Management</h1>
+        <p>Manage team registration, generate round-robin fixtures, record match scores, and track live standings dynamically.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;align-items:flex-end;gap:0.5rem;">
+        <button id="btn-generate" class="btn btn-success" onclick="generateFixtures()">
+          📅 Generate Fixtures
+        </button>
+        <span id="pending-badge" class="pending-badge" style="display:none;">⏳ <span id="pending-count">0</span> matches pending</span>
+      </div>
+    </div>
+
+    <!-- League complete banner -->
+    <div id="league-complete-banner" class="league-complete-banner">
+      <div class="trophy">🏆</div>
+      <div style="flex:1;">
+        <h3>League Complete!</h3>
+        <p>All matches have been played. Register new teams above, then click <strong>Re-schedule Fixtures</strong> to begin a new season with all current teams.</p>
+      </div>
+      <button class="btn btn-gold" onclick="generateFixtures()">🔄 Re-schedule Fixtures</button>
+    </div>
+
+    <div id="global-alert" class="alert"></div>
+
+    <div class="grid-layout">
+      <!-- Teams Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">⚽ Registered Teams (<span id="team-count">0</span>)</div>
+        </div>
+        <div class="input-group">
+          <input type="text" id="team-name-input" placeholder="Enter new team name (e.g. Titans)..." onkeydown="if(event.key==='Enter') registerTeam()">
+          <button class="btn btn-primary" onclick="registerTeam()">Register</button>
+        </div>
+        <div id="teams-list" class="teams-chips">
+          <!-- Loaded dynamically -->
+        </div>
+      </div>
+
+      <!-- Standings Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title">🏆 League Standings</div>
+          <button class="btn btn-swagger" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;" onclick="loadStandings()">↻ Refresh</button>
+        </div>
+        <div class="table-container">
+          <table>
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Team</th>
+                <th>P</th>
+                <th>W</th>
+                <th>D</th>
+                <th>L</th>
+                <th>PTS</th>
+              </tr>
+            </thead>
+            <tbody id="standings-body">
+              <!-- Loaded dynamically -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- Matches / Fixtures Card -->
+    <div class="card">
+      <div class="card-header">
+        <div class="card-title">⚔️ Fixtures & Matches</div>
+        <button class="btn btn-swagger" style="padding: 0.3rem 0.7rem; font-size: 0.75rem;" onclick="loadMatches()">↻ Refresh</button>
+      </div>
+      <div id="matches-container" class="matches-list">
+        <!-- Loaded dynamically -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    const showAlert = (msg, isError = false) => {
+      const alert = document.getElementById('global-alert');
+      alert.textContent = msg;
+      alert.className = 'alert ' + (isError ? 'alert-error' : 'alert-success');
+      alert.style.display = 'block';
+      setTimeout(() => { alert.style.display = 'none'; }, 4000);
+    };
+
+    async function loadTeams() {
+      try {
+        const res = await fetch('/api/teams');
+        const teams = await res.json();
+        const container = document.getElementById('teams-list');
+        document.getElementById('team-count').textContent = teams.length;
+        container.innerHTML = '';
+        if (teams.length === 0) {
+          container.innerHTML = '<span style="color:var(--text-muted);font-size:0.85rem;">No teams registered yet. Add at least 2 teams to generate fixtures.</span>';
+          return;
+        }
+        teams.forEach(t => {
+          const chip = document.createElement('span');
+          chip.className = 'team-chip';
+          chip.textContent = t.name;
+          container.appendChild(chip);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function registerTeam() {
+      const input = document.getElementById('team-name-input');
+      const name = input.value.trim();
+      if (!name) return;
+      try {
+        const res = await fetch('/api/teams', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        if (res.ok) {
+          input.value = '';
+          showAlert(`Team "${name}" registered successfully!`);
+          loadTeams();
+          loadStandings();
+        } else {
+          const err = await res.json();
+          showAlert(err.message || 'Failed to register team', true);
+        }
+      } catch (err) {
+        showAlert('Network error: ' + err.message, true);
+      }
+    }
+
+    // ── Status polling ───────────────────────────────────────────────────────
+    async function refreshStatus() {
+      try {
+        const res = await fetch('/api/fixtures/status');
+        const status = await res.json();
+        const btn = document.getElementById('btn-generate');
+        const banner = document.getElementById('league-complete-banner');
+        const pendingBadge = document.getElementById('pending-badge');
+        const pendingCount = document.getElementById('pending-count');
+
+        if (status.leagueComplete) {
+          // All matches done — show re-schedule UI
+          banner.classList.add('visible');
+          btn.textContent = '🔄 Re-schedule Fixtures';
+          btn.className = 'btn btn-gold';
+          btn.disabled = false;
+          pendingBadge.style.display = 'none';
+        } else if (status.pendingMatches > 0) {
+          // Matches still pending
+          banner.classList.remove('visible');
+          btn.textContent = '📅 Generate Fixtures';
+          btn.className = 'btn btn-disabled';
+          btn.disabled = true;
+          pendingBadge.style.display = 'inline-flex';
+          pendingCount.textContent = status.pendingMatches;
+        } else {
+          // No matches yet — allow generating
+          banner.classList.remove('visible');
+          btn.textContent = '📅 Generate Fixtures';
+          btn.className = 'btn btn-success';
+          btn.disabled = false;
+          pendingBadge.style.display = 'none';
+        }
+      } catch (err) {
+        console.error('Status poll failed', err);
+      }
+    }
+
+    // ── Teams ────────────────────────────────────────────────────────────────
+    async function loadTeams() {
+      try {
+        const res = await fetch('/api/teams');
+        const teams = await res.json();
+        const container = document.getElementById('teams-list');
+        document.getElementById('team-count').textContent = teams.length;
+        container.innerHTML = '';
+        if (teams.length === 0) {
+          container.innerHTML = '<span style="color:var(--text-muted);font-size:0.85rem;">No teams registered yet. Add at least 2 teams to generate fixtures.</span>';
+          return;
+        }
+        teams.forEach(t => {
+          const chip = document.createElement('span');
+          chip.className = 'team-chip';
+          chip.textContent = t.name;
+          container.appendChild(chip);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function registerTeam() {
+      const input = document.getElementById('team-name-input');
+      const name = input.value.trim();
+      if (!name) return;
+      try {
+        const res = await fetch('/api/teams', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ name })
+        });
+        if (res.ok) {
+          input.value = '';
+          showAlert(`Team "${name}" registered successfully!`);
+          loadTeams();
+          loadStandings();
+        } else {
+          const err = await res.json();
+          showAlert(err.message || 'Failed to register team', true);
+        }
+      } catch (err) {
+        showAlert('Network error: ' + err.message, true);
+      }
+    }
+
+    // ── Fixture generation / re-schedule ─────────────────────────────────────
+    async function generateFixtures() {
+      try {
+        const res = await fetch('/api/fixtures/generate', { method: 'POST' });
+        if (res.ok) {
+          const isReschedule = document.getElementById('league-complete-banner').classList.contains('visible');
+          showAlert(isReschedule
+            ? '🔄 New fixture generated with all current teams!'
+            : '✅ Fixtures generated successfully!');
+          loadMatches();
+          loadStandings();
+          refreshStatus();
+        } else {
+          const err = await res.json();
+          showAlert(err.message || 'Could not generate fixtures', true);
+        }
+      } catch (err) {
+        showAlert('Network error: ' + err.message, true);
+      }
+    }
+
+    // ── Standings ────────────────────────────────────────────────────────────
+    async function loadStandings() {
+      try {
+        const res = await fetch('/api/standings');
+        const standings = await res.json();
+        const tbody = document.getElementById('standings-body');
+        tbody.innerHTML = '';
+        if (standings.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;color:var(--text-muted);padding:1.5rem;">No standings data available yet.</td></tr>';
+          return;
+        }
+        standings.forEach((entry, idx) => {
+          const rankClass = idx === 0 ? 'rank-1' : idx === 1 ? 'rank-2' : idx === 2 ? 'rank-3' : '';
+          const tr = document.createElement('tr');
+          tr.innerHTML = `
+            <td class="rank-cell ${rankClass}">${idx + 1}</td>
+            <td class="team-name-cell">${entry.team ? entry.team.name : 'Unknown'}</td>
+            <td>${entry.matchesPlayed}</td>
+            <td>${entry.wins}</td>
+            <td>${entry.draws}</td>
+            <td>${entry.losses}</td>
+            <td class="pts-cell">${entry.points}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    // ── Matches ──────────────────────────────────────────────────────────────
+    async function loadMatches() {
+      try {
+        const res = await fetch('/api/matches');
+        const matches = await res.json();
+        const container = document.getElementById('matches-container');
+        container.innerHTML = '';
+        if (matches.length === 0) {
+          container.innerHTML = '<div style="color:var(--text-muted);text-align:center;padding:1.5rem;">No matches scheduled. Click "Generate Fixtures" once at least 2 teams are added.</div>';
+          return;
+        }
+        matches.forEach(m => {
+          const div = document.createElement('div');
+          div.className = 'match-item';
+          const fixtureRound = m.fixture ? `Round ${m.fixture.roundNumber}` : '';
+          let rightHtml = '';
+          if (m.resultRecorded) {
+            rightHtml = `<span class="score-display">${m.homeScore} - ${m.awayScore}</span>`;
+          } else {
+            rightHtml = `
+              <div class="match-score-form">
+                <input type="number" min="0" class="score-input" id="hs-${m.id}" placeholder="0">
+                <span>:</span>
+                <input type="number" min="0" class="score-input" id="as-${m.id}" placeholder="0">
+                <button class="btn btn-primary" style="padding:0.3rem 0.7rem;font-size:0.75rem;" onclick="recordScore(${m.id})">Save</button>
+              </div>
+            `;
+          }
+          div.innerHTML = `
+            <div style="font-size:0.75rem;color:var(--text-muted);width:70px;">${fixtureRound}</div>
+            <div class="match-teams">
+              <span>${m.homeTeam.name}</span>
+              <span class="match-vs">vs</span>
+              <span>${m.awayTeam.name}</span>
+            </div>
+            ${rightHtml}
+          `;
+          container.appendChild(div);
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+
+    async function recordScore(matchId) {
+      const homeVal = document.getElementById(`hs-${matchId}`).value;
+      const awayVal = document.getElementById(`as-${matchId}`).value;
+      if (homeVal === '' || awayVal === '') {
+        showAlert('Please enter both scores', true);
+        return;
+      }
+      try {
+        const res = await fetch(`/api/matches/${matchId}/result?homeScore=${homeVal}&awayScore=${awayVal}`, {
+          method: 'POST'
+        });
+        if (res.ok) {
+          showAlert('Match result recorded!');
+          loadMatches();
+          loadStandings();
+          refreshStatus();   // re-check if league is now complete
+        } else {
+          const err = await res.json();
+          showAlert(err.message || 'Failed to record result', true);
+        }
+      } catch (err) {
+        showAlert('Network error: ' + err.message, true);
+      }
+    }
+
+    // ── Bootstrap ────────────────────────────────────────────────────────────
+    refreshStatus();
+    loadTeams();
+    loadStandings();
+    loadMatches();
+  </script>
+</body>
+</html>
